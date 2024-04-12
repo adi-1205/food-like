@@ -1,0 +1,12 @@
+{{#each restaurants}}
+<a href="/restaurants/{{this.id}}" class="text-decoration-none">
+    <div class="col">
+        <div class="card">
+            <img src="https://source.unsplash.com/random/?restaurant,food,pizza,burger,bakery" class="card-img-top">
+            <div class="card-body">
+                <h5 class="card-title">{{this.restaurant_name}}</h5>
+            </div>
+        </div>
+    </div>
+</a>
+{{/each}}

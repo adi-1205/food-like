@@ -1,0 +1,14 @@
+{{#each requests}}
+<tr>
+    <th scope="row">{{this.ind}}</th>
+    <td>{{this.email}}</td>
+    <td>{{this.restName}}</td>
+    <td>{{this.name}}</td>
+    <td>{{this.price}}</td>
+    <td>
+        <div class="btn swiggy-btn-light approve-btn" data-id="{{this.id}}">
+            Approve
+        </div>
+    </td>
+</tr>
+{{/each}}

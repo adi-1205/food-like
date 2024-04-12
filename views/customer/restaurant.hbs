@@ -1,0 +1,16 @@
+{{> customer-nav}}
+
+<div class="container restaurant-page mt-4 ">
+    <h3 class="text-center text-capitalize mb-4">{{restaurant.name}}</h3>
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        {{> customer-menu-list}}
+    </div>
+</div>
+
+
+{{> scripts}}
+<script>
+    $(document).ready(function () {
+        Handlers.restaurantPage()
+    })
+</script>

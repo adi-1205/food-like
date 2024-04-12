@@ -1,0 +1,54 @@
+{{> user-nav}}
+
+{{!-- <h3 class="text-center mt-4">Menu Items</h3> --}}
+<div class="text-end mb-4">
+    <button type="button" class="btn swiggy-btn-dark fw-bold mx-4 mt-3" id="add-to-menu-modal-btn">
+        Add Item in Menu
+    </button>
+</div>
+
+<div class="modal fade menu-modal" id="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h1 class="modal-title fs-5" id="modal-header">Add Item in Menu</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <input type="text" class="form-control swiggy-input mb-3" placeholder="Name..." id="name-inp">
+                <input type="text" class="form-control swiggy-input mb-3" placeholder="Price..." id="price-inp">
+                <input type="file" class="form-control swiggy-input mb-3" name="image" id="image-inp" accept="image/png, image/jpg, image/jpeg">
+                <textarea class="form-control swiggy-input" id="desc-inp">Description</textarea>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn swiggy-btn-dark rounded-pill p-2 px-3 shadow"
+                    id="req-to-add-btn">Request to add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="{{count}}" id="count">
+<div class="container-fluid menu-page">
+    <div class="container">
+        <div class="row display-flex">
+
+            {{> menu-list}}
+
+        </div>
+
+    </div>
+
+
+</div>
+
+<div id="pagination-area">
+
+</div>
+
+{{> scripts}}
+<script>
+    $(document).ready(function () {
+        Handlers.menuPage()
+    })
+</script>

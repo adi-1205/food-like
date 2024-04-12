@@ -1,0 +1,57 @@
+{{> admin-nav}}
+{{!-- 
+<div class="text-end">
+    <button type="button" class="btn swiggy-btn-dark fw-bold mx-4 mt-3" id="invite-user-modal-btn">
+        Invite User
+    </button>
+</div>
+
+<div class="modal fade invite-modal" id="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h1 class="modal-title fs-5" id="modal-header">Invite User</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <input type="text" class="form-control swiggy-input mb-3" placeholder="Email..." id="email-inp">
+                <input type="text" class="form-control swiggy-input mb-3" placeholder="Restaurant name..."
+                    id="rest-name-inp">
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn swiggy-btn-dark rounded-pill p-2 px-3 shadow"
+                    id="invite-user-btn">Invite</button>
+            </div>
+        </div>
+    </div>
+</div> --}}
+
+<input type="hidden" value="{{count}}" id="count">
+<div class="container-fluid d-flex justify-content-center align-items-center request-list mt-4">
+    <table class="table table-striped table-hover w-50">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Email</th>
+                <th scope="col">Restaurant</th>
+                <th scope="col">Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{> request-list }}
+        </tbody>
+    </table>
+</div>
+
+<div id="pagination-area">
+
+</div>
+
+{{> scripts}}
+<script>
+    $(document).ready(function () {
+        Handlers.requestsPage()
+    })
+</script>

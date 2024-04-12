@@ -1,0 +1,19 @@
+{{#each menus}}
+<div class="col-md-6 mb-4 menu-item">
+    <div class="card h-100">
+        <div class="row g-0 h-100">
+            <div class="col-md-5 img-wrapper">
+                <img src="/{{this.image}}" class="img-fluid rounded-start" alt="...">
+            </div>
+            <div class="col-md-7">
+                <div class="card-body">
+                    <h5 class="card-title">{{this.name}}</h5>
+                    <p class="card-text">{{this.description}}</p>
+                    <p class="card-text"><small class="text-body-secondary">₹ {{this.price}}</small></p>
+                    <button class="btn btn-sm swiggy-btn-light remove-from-menu" data-id="{{this.id}}" >Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{/each}}

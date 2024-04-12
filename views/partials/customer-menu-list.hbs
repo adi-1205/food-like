@@ -1,0 +1,14 @@
+{{#each restaurant.menus}}
+<div class="col">
+    <div class="card">
+        <img src="/{{this.image}}" class="card-img-top">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title">{{this.name}}</h5>
+                <p class="card-text"><small class="text-body-secondary">₹ {{this.price}}</small></p>
+            </div>
+            <button class="btn btn-sm swiggy-btn-light add-to-cart" data-id="{{this.id}}">Add to Cart</button>
+        </div>
+    </div>
+</div>
+{{/each}}

@@ -1,0 +1,119 @@
+:root {
+    --s-org-p: #f15700;
+    --s-org-s: #ffae65;
+}
+
+/* common elements start */
+
+.btn:not(.swiggy-btn-light) {
+    background-color: var(--s-org-p);
+    transition: all 300ms ease-in-out;
+}
+
+.swiggy-btn-light {
+    border: solid 2px rgba(0, 0, 0, 0.075);
+    color: var(--s-org-p);
+}
+
+.swiggy-btn-light:hover {
+    background-color: rgba(0, 0, 0, 0.167);
+    color: var(--s-org-p);
+}
+
+.swiggy-btn-dark {
+    background: none;
+    background-color: none;
+    background: linear-gradient(45deg, var(--s-org-s), var(--s-org-p));
+    color: white;
+    transition: all 300ms ease-in-out;
+}
+
+.swiggy-btn-dark:hover {
+    background: none;
+    background-color: none;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.249);
+    background: var(--s-org-p);
+    color: white;
+}
+
+.swiggy-input:focus {
+    box-shadow: none;
+    border: solid 1px rgba(0, 0, 0, 0.466);
+}
+
+/* common elements end */
+
+/* login page start */
+
+/* login page end */
+
+/* admin invites page start */
+.swiggy-brand {
+    color: var(--s-org-p);
+    font-weight: 700;
+}
+
+.swiggy-brand:hover {
+    color: orangered;
+    font-weight: 700;
+    text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.329);
+}
+
+/* admin invites page end */
+
+
+/* menu page starts */
+
+.menu-page .img-wrapper {
+    aspect-ratio: 4/3;
+}
+
+.menu-page .img-wrapper img {
+    object-fit: cover !important;
+    height: 100%;
+    width: 100%;
+}
+
+.menu-page .card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.menu-page.row.display-flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.menu-page.row.display-flex>[class*='col-'] {
+    display: flex;
+    flex-direction: column;
+}
+
+/* menu page ends */
+
+/* restaurants page starts */
+.restaurants-page img {
+    object-fit: cover;
+    aspect-ratio: 4/3;
+    width: 100%;
+}
+.restaurants-page .card-title {
+    text-transform: capitalize;
+}
+
+/* restaurants page ends */
+
+/* restaurant page starts */
+.restaurant-page img {
+    object-fit: cover;
+    aspect-ratio: 16/9;
+    width: 100%;
+}
+.restaurant-page .card-title {
+    text-transform: capitalize;
+}
+
+/* restaurant page ends */
