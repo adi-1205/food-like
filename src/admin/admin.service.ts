@@ -5,9 +5,9 @@ import { User } from 'src/db/models/user.model';
 import * as crypto from 'node:crypto';
 import * as moment from 'moment';
 import { MailService } from 'src/mail/mail.service';
-import { Op } from 'sequelize';
 import { Sequelize } from "sequelize-typescript";
 import { Menu } from 'src/db/models/menu.model';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
@@ -18,6 +18,7 @@ export class AdminService {
         @InjectModel(Menu)
         private readonly MenuModel: typeof Menu,
         private mailService: MailService,
+        private jwtService: JwtService,
         @InjectConnection() private seq: Sequelize
     ) {
     }
@@ -26,8 +27,13 @@ export class AdminService {
 
         const t = await this.seq.transaction()
 
-
         let invite_token = crypto.randomBytes(8).toString('hex')
+
+        let token = this.jwtService.sign({ token: invite_token, email: invitation.email })
+
+
+        let existingRest = await this.UserModel.findOne({ where: { restaurant_name: invitation.restName } })
+        if (existingRest) throw new BadRequestException('restairant with this name already exist')
 
         // if invitation exist
         // reinvite after invite expires
@@ -52,9 +58,7 @@ export class AdminService {
             transaction: t
         })
 
-        let data = await this.mailService.sendInviteMail(invitation.email, invite_token)
-
-
+        let data = await this.mailService.sendInviteMail(invitation.email, token)
 
         if (data.sent) {
             t.commit()
@@ -83,7 +87,6 @@ export class AdminService {
     }
 
     async getRequests() {
-
 
         let requests = await this.MenuModel.findAll({
             where: {

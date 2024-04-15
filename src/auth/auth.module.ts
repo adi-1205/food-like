@@ -14,7 +14,6 @@ dotenv.config();
   imports: [
     SequelizeModule.forFeature([User]),
     JwtModule.register({
-      global: true,
       secret: process.env.JWT_SECRET
     }),
     PassportModule.register({

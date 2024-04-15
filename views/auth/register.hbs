@@ -1,0 +1,18 @@
+<div class="container-fluid vh-100  d-flex justify-content-center align-items-center login-page">
+    <div class="w-25">
+        <h1 class="mb-4 text-center">Register</h1>
+
+        <input type="text" id="email" class="form-control swiggy-input  mb-3" placeholder="Email...">
+        <input type="password" id="password" class="form-control swiggy-input mb-3" placeholder="Password...">
+
+        <button class="btn rounded-pill p-3 py-2 w-100 swiggy-btn-dark" id="register-btn">Register</button>
+    </div>
+</div>
+
+
+{{> scripts}}
+<script>
+    $(document).ready(function () {
+        Handlers.registerPage()
+    })
+</script>

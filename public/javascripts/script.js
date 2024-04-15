@@ -25,6 +25,36 @@ class Handlers {
         })
     }
 
+    static registerPage() {
+        $('#register-btn').click(async function () {
+            console.log('regester');
+            try {
+
+                let email = $('#email').val()
+                let password = $('#password').val()
+
+                if (!validator.isEmail(email))
+                    toastr.error('Enter valid email')
+                if (password.length < 5)
+                    toastr.error('Create strong password')
+
+                else {
+                    let data = await Helpers.ajx('/auth/register', {
+                        formData: {
+                            email,
+                            password
+                        }
+                    })
+                    if (data.redirect)
+                        location.href = data.redirect
+                }
+            } catch (err) {
+                console.log(err);
+                toastr.error(err.responseJSON.message)
+            }
+        })
+    }
+
     static invitesPage() {
         $('#invite-user-modal-btn').click(_ => $('#modal').modal('show'))
 
@@ -141,20 +171,54 @@ class Handlers {
         })
     }
 
-    static restaurantPage() {
+    static async restaurantPage() {
+        await Cart.init()
         $('.add-to-cart').click(async function () {
             let id = $(this).data('id')
-            await Cart.addToCart(id)
+            let qty = $(this).parent().parent().find('.qty').val()
+            await Cart.addToCart(qty, id)
+        })
+    }
+
+    static orderPage() {
+        $('#order-btn').click(async function () {
+            let data = await Helpers.tryCatchedAjax('/order', { method: 'get' })
+
+            if (data.url)
+                location.href = data.url
         })
     }
 }
 
-class Cart{
-    static init(){
+class Cart {
+    static async init() {
+        console.log('CART INITIALIZING');
+        let isLoggedIn = !!Helpers.getCookie('auth')
+        if (isLoggedIn) {
+            let storeString = localStorage.getItem('store')
 
+            if (!storeString) return
+
+            let store = JSON.parse(storeString)
+            
+            if (!isArray(store) || store.length == 0) return
+
+            let data = await Helpers.tryCatchedAjax('/cart', {
+                formData: {
+                    items: store
+                }
+            })
+        }
+
+        this.emptyLocal()
     }
 
-    static async addToCart(id){
+    static emptyLocal() {
+        if (localStorage.getItem('store'))
+            localStorage.removeItem('store')
+    }
+
+    static async addToCart(qty, id) {
         let isLoggedIn = !!Helpers.getCookie('auth')
         if (!isLoggedIn) {
             let storeString = localStorage.getItem('store')
@@ -164,12 +228,20 @@ class Cart{
             } else {
                 store = JSON.parse(storeString)
             }
-            store.push(id)
+
+            let ind = store.findIndex(s => s.id === id)
+            if (ind != -1) {
+                store[ind] = { qty, id }
+            } else {
+                store.push({ qty, id })
+            }
             localStorage.setItem('store', JSON.stringify(store))
+
+            console.log(localStorage.getItem('store'));
         } else {
             let data = await Helpers.tryCatchedAjax('/cart', {
                 formData: {
-                    ids: [id]
+                    items: [{ qty, id }]
                 }
             })
             if (data.success) {

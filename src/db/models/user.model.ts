@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize';
-import { Column, Table, Model, HasMany } from 'sequelize-typescript';
+import { Column, Table, Model, HasMany, HasOne } from 'sequelize-typescript';
 import { Role } from 'src/shared/enums/role.enum';
 import { UserStatus } from 'src/shared/enums/status.enum';
-import { Menu } from './menu.model';
 import { Cart } from './cart.model';
+import { Menu } from './menu.model';
 
 @Table({
     tableName: 'user',
@@ -29,7 +29,7 @@ export class User extends Model<User> {
     verified: boolean;
 
     @Column({
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
     })
     invite_token: string;
 
@@ -50,10 +50,13 @@ export class User extends Model<User> {
 
     @Column({ type: DataTypes.STRING })
     restaurant_name: string
+    
 
     @HasMany(() => Menu)
-    menus: Menu[];
+    menus: Menu[]
 
-    @HasMany(() => Cart)
-    carts: Cart[];
+
+    @HasOne(() => Cart)
+    cart: Cart
+
 }

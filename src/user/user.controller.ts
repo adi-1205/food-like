@@ -21,13 +21,6 @@ export class UserController {
     async getViewMenu(@Req() req) {
         return await this.userService.getFullMenu(req)
     }
-    // @Get('restaurants')
-    // @Roles(Role.USER)
-    // @UseGuards(JwtAuthGuard, RolesGuard)
-    // @Render('user/restaurants')
-    // async getViewRestaurants() {
-    //     return await this.userService.getRestaurants()
-    // }
 
     @Post()
     @UsePipes(ValidationPipe)

@@ -1,10 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectConnection, InjectModel } from '@nestjs/sequelize';
 import { isArray } from 'class-validator';
 import { Cart } from 'src/db/models/cart.model';
 import { Menu } from 'src/db/models/menu.model';
 import { User } from 'src/db/models/user.model';
 import { UserStatus } from 'src/shared/enums/status.enum';
+import { Stripe } from 'stripe';
+
+import * as dotenv from 'dotenv';
+import { CartItem } from 'src/db/models/cartItem.model';
+import { Sequelize } from 'sequelize-typescript';
+import { where } from 'sequelize';
+dotenv.config()
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 @Injectable()
 export class CustomerService {
@@ -16,10 +25,11 @@ export class CustomerService {
         private readonly UserModel: typeof User,
         @InjectModel(Cart)
         private readonly CartModel: typeof Cart,
+        @InjectModel(CartItem)
+        private readonly CartItemModel: typeof CartItem,
+        @InjectConnection() private seq: Sequelize
     ) {
     }
-
-
 
     async getRestaurants() {
         let _restaurants = await this.UserModel.findAll({
@@ -40,7 +50,6 @@ export class CustomerService {
             }
         })
 
-        console.log(restaurants);
 
         return { restaurants, restaurantPage: true }
     }
@@ -69,38 +78,169 @@ export class CustomerService {
             })
         }
 
-        console.log(restaurant);
-
         return { restaurant, restaurantPage: true }
     }
 
-    async addToCart(req, ids) {
-        console.log(ids);
+    async addToCart(req, items) {
 
-        if (!isArray(ids) || ids.length === 0)
+        if (!isArray(items) || items.length === 0)
             throw new BadRequestException('Invalid Items')
-        for (let id of ids)
-            if (isNaN(+id))
-                throw new BadRequestException('Invalid Item')
 
-        const menus = await this.MenuModel.findAll({
+        let t = await this.seq.transaction()
+
+        let [cart, created] = await this.CartModel.findOrCreate({
             where: {
-                id: ids,
+                user_id: req.user.id
             },
-            raw: true
-        });
+            defaults: {
+                user_id: req.user.id
+            }
+        })
 
-        if (menus.length !== ids.length) {
-            throw new BadRequestException('One or more menu items not found');
+        for (let item of items) {
+            let itemId = parseInt(item.id)
+            let itemQty = parseInt(item.qty)
+            if (isNaN(itemId) || isNaN(itemQty)) {
+                t.rollback()
+                throw new BadRequestException('Items and Quanitiy should be numeric string')
+            }
+
+            let menuItem = await this.MenuModel.findByPk(itemId)
+
+            if (!menuItem) {
+                t.rollback()
+                throw new BadRequestException('One or more does not exist on menu')
+            }
+
+            let cartItem = await this.CartItemModel.findOne({
+                where: {
+                    menu_id: itemId,
+                    cart_id: cart.id
+                }
+            })
+
+            if (cartItem) {
+                cartItem.qty = itemQty
+                await cartItem.save()
+            } else {
+                await this.CartItemModel.create({
+                    menu_id: itemId,
+                    cart_id: cart.id,
+                    qty: itemQty
+                })
+            }
         }
-
-        const cartItems = menus.map(menu => ({
-            user_id: req.user.id,
-            menu_id: menu.id
-        }));
-
-        await this.CartModel.bulkCreate(cartItems);
-
+        t.commit()
         return { success: true }
+    }
+
+    async getCart(req) {
+        let cart = await this.CartModel.findOne({
+            where: {
+                user_id: req.user.id
+            }
+        })
+
+        if (!cart) return []
+
+        let cartItems = await this.CartItemModel.findAll({
+            where: {
+                cart_id: cart.id
+            },
+            attributes: ['qty'],
+            include: {
+                model: this.MenuModel,
+                attributes: ['name', 'image', 'price']
+            }
+        })
+
+        let allTotal = 0
+        let menus = cartItems.map(c => {
+            allTotal += c.menu.price * c.qty
+            return {
+                ...c.menu.toJSON(),
+                qty: c.qty,
+                total: c.menu.price * c.qty
+            }
+        })
+
+
+        return { menus: menus, allTotal, emptyCart: menus.length === 0 }
+    }
+
+    async createPaymentSession(req) {
+
+        let cart = await this.CartModel.findOne({
+            where: {
+                user_id: req.user.id
+            }
+        })
+
+        if (!cart) return []
+
+        let cartItems = await this.CartItemModel.findAll({
+            where: {
+                cart_id: cart.id
+            },
+            attributes: ['qty'],
+            include: {
+                model: this.MenuModel,
+                attributes: ['price', 'name']
+            }
+        })
+
+        if (cartItems.length == 0)
+            throw new BadRequestException('No item in cart to order')
+
+        let menus = cartItems.map(c => {
+            return {
+                ...c.menu.toJSON(),
+                qty: c.qty,
+                total: c.menu.price * c.qty
+            }
+        })
+
+
+        let line_items = cartItems.map(c => {
+            return {
+                price_data: {
+                    product_data: {
+                        name: c.menu.name
+                    },
+                    currency: 'inr',
+                    unit_amount: c.menu.price * 100,
+                },
+                quantity: c.qty
+            }
+        })
+
+        console.log('LINE ITEMS');
+        console.log(line_items);
+
+        let session = await stripe.checkout.sessions.create({
+            mode: 'payment',
+            line_items: line_items,
+            success_url: 'http://localhost:3000/success',
+            cancel_url: 'http://localhost:3000/fail'
+        })
+
+        return { url: session.url }
+    }
+
+    async clearCart(req) {
+        let cart = await this.CartModel.findOne({
+            where: {
+                user_id: req.user.id
+            }
+        })
+
+        await this.CartItemModel.destroy({
+            where: {
+                cart_id: cart.id
+            },
+            force: true
+        })
+
+        return { url: '/' }
     }
 }

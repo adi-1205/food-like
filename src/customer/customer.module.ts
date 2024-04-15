@@ -5,10 +5,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from 'src/db/models/user.model';
 import { Menu } from 'src/db/models/menu.model';
 import { Cart } from 'src/db/models/cart.model';
+import { CartItem } from 'src/db/models/cartItem.model';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([User, Menu, Cart])
+    SequelizeModule.forFeature([User, Menu, Cart, CartItem])
   ],
   controllers: [CustomerController],
   providers: [CustomerService],

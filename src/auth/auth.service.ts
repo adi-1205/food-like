@@ -19,7 +19,7 @@ export class AuthService {
 
 
     async postLogin(res, loginDto: LoginDto) {
-        let user = await this.UserModel.findOne({ where: { email: loginDto.email } })
+        let user = await this.UserModel.findOne({ where: { email: loginDto.email, verified: true } })
 
         if (!user)
             throw new BadRequestException('Email does not exist')
@@ -31,20 +31,41 @@ export class AuthService {
 
         let token = this.jwtService.sign({ id: user.id })
         res.cookie('auth', token)
-        let redirect 
-        if(user.role == Role.ADMIN)
+        let redirect
+        if (user.role == Role.ADMIN)
             redirect = '/admin'
-        if(user.role == Role.USER)
+        if (user.role == Role.USER)
             redirect = '/user'
-        if(user.role == Role.CUSTOMER)
-            redirect = '/restaurants'
+        if (user.role == Role.CUSTOMER)
+            redirect = '/'
         return { redirect }
     }
 
+    async postRegister(registerDto: LoginDto) {
+        let user = await this.UserModel.findOne({ where: { email: registerDto.email } })
+
+        if (user)
+            throw new BadRequestException('Email already exist')
+
+        let hashed = bcrypt.hashSync(registerDto.password, 12)
+
+        await this.UserModel.create({
+            email: registerDto.email,
+            password: hashed,
+            role: Role.CUSTOMER,
+            verified: true,
+        })
+        return { redirect:'/auth/login' }
+    }
+
     async postVerify(token, verify: VerifyDto) {
+
+        let invitation = this.jwtService.decode(token)
+        
         let invitedUser = await this.UserModel.findOne({
             where: {
-                invite_token: token
+                invite_token: invitation.token,
+                email: invitation.email
             }
         })
 

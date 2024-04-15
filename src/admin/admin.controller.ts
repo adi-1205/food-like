@@ -5,7 +5,6 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/shared/decorators/roles.decorator';
 import { Role } from 'src/shared/enums/role.enum';
 import { CreateInvitation } from './dto/createInvitation.dto';
-import * as moment from 'moment';
 
 @Controller('admin')
 export class AdminController {
@@ -65,6 +64,4 @@ export class AdminController {
     async approveMenuItem(@Param('id') id){
         return await this.adminService.approveMenuItem(id)
     }
-
-
 }

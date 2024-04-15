@@ -1,0 +1,41 @@
+{{> customer-nav}}
+
+<div class="container mt-4 cart-page">
+    {{#each menus}}
+    <div class="container mb-4 border-bottom pb-3">
+        <div class="row">
+            <div class="col-md-3 d-flex align-items-center justify-content-center">
+                <img src="/{{this.image}}" alt="" class="img-fluid">
+            </div>
+            <div class="col-md-3 d-flex align-items-center justify-content-center">
+                {{this.name}}
+            </div>
+            <div class="col-md-2 d-flex align-items-center justify-content-center">₹ {{this.price}}</div>
+            <div class="col-md-2 d-flex align-items-center justify-content-center">
+                Qty: {{this.qty}}
+            </div>
+            <div class="col-md-2 d-flex align-items-center justify-content-center">
+                Total: {{this.total}}
+            </div>
+        </div>
+    </div>
+    {{/each}}
+
+    {{#if emptyCart}}
+        <h3>Add some items to cart</h3>
+    {{else}}
+<div class="d-flex justify-content-between align-items-center">
+        <h4><span class="fw-normal">Total:</span> ₹ {{allTotal}}</h4>
+        <button class="btn swiggy-btn-dark" id="order-btn">Order</button>
+    </div>
+    {{/if}}
+
+    
+</div>
+
+{{> scripts}}
+<script>
+    $(document).ready(function () {
+        Handlers.orderPage()
+    })
+</script>

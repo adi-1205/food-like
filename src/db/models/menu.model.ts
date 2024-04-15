@@ -1,7 +1,8 @@
 import { DataTypes } from 'sequelize';
 import { Column, Table, Model, ForeignKey, BelongsTo, HasMany, BelongsToMany } from 'sequelize-typescript';
-import { User } from './user.model'; // Adjust the path to your User model
+import { User } from './user.model';
 import { Cart } from './cart.model';
+import { CartItem } from './cartItem.model';
 
 @Table({
     tableName: 'menu',
@@ -16,7 +17,7 @@ export class Menu extends Model<Menu> {
     name: string;
 
     @Column({
-        type: DataTypes.DECIMAL(10, 2), // Use DECIMAL for prices to handle currency values accurately
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
     })
     price: number;
@@ -43,12 +44,10 @@ export class Menu extends Model<Menu> {
     user_id: number;
 
     @BelongsTo(() => User)
-    user: User; 
+    user: User;
 
-    @HasMany(() => Cart)
-    carts: Cart[];
+    @BelongsToMany(() => Cart, () => CartItem)
+    carts: Cart[]
 
-    @BelongsToMany(() => User, () => Cart)
-    users: User[];
 }
 

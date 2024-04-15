@@ -117,3 +117,12 @@
 }
 
 /* restaurant page ends */
+
+/* cart page start */
+
+.cart-page .row img{
+    max-height: 100px;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+}
+/* cart page end */
